@@ -1,2 +1,2 @@
-# master_thesis
-UST AGH Mechatronic Engineering Master Programme. Mikolaj Stryja master thesis.
+# Master Thesis
+UST AGH Mechatronic Engineering Master Programme.

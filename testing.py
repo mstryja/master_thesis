@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 
 def show_img_dir_one_by_one(data):
     """
+    WARNING!!!
+        This function from some reason does not work. I have to write a new version.
+        As the instance of the class Test.
+
     Docstring...
     ConstPixelDims has the below structure:
     (int(dicom rows), int(dicom columns), int(value of all images in given directory))
@@ -27,12 +31,10 @@ def show_img_dir_one_by_one(data):
     Flipud function provides the possible best view of the dicom images.
     Due to the flipud function we can see the image from the same perspective which is in hospitals and clinical institutions
     """
-
-    data = os.path.normpath(data)
     print(data)
     data = str(data)
     if len([data])==1:
-        print("tu")
+        print("tu") # testing properties
         print(data)
         ds = pydicom.read_file(data)
         ConstPixelDims = (int(ds.Rows), int(ds.Columns), len(data))
@@ -50,7 +52,8 @@ def show_img_dir_one_by_one(data):
     else:
         i = 0
         for filenameDCM in list(data):
-            print('nie bo tu')
+            data = os.path.normpath(filenameDCM)
+            print('nie bo tu') # testing properties
             print(filenameDCM)
             ds = pydicom.read_file(filenameDCM)
             ConstPixelDims = (int(ds.Rows), int(ds.Columns), len(data))
@@ -66,6 +69,21 @@ def show_img_dir_one_by_one(data):
             plt.show()
             i += 1
 
+
+def show_img_dir_one_by_one_2(data):
+
+    ds = pydicom.read_file(data)
+    ConstPixelDims = (int(ds.Rows), int(ds.Columns), len(data))
+    ConstPixelSpacing = (float(ds.PixelSpacing[0]), float(ds.PixelSpacing[1]), float(len(data)))
+    ArrayDicom = np.zeros(ConstPixelDims, dtype=ds.pixel_array.dtype)
+    ArrayDicom[:, :, data.index(data)] = ds.pixel_array
+    x = np.arange(0.0, (ConstPixelDims[0]+1)*ConstPixelSpacing[0], ConstPixelSpacing[0])
+    y = np.arange(0.0, (ConstPixelDims[1]+1)*ConstPixelSpacing[1], ConstPixelSpacing[1])
+    plt.figure(f'Image: {ds.PatientID}', dpi=80)
+    plt.axes().set_aspect('equal', 'datalim')
+    plt.set_cmap(plt.gray())
+    plt.pcolormesh(x, y, np.flipud(ArrayDicom[:, :, 0]))
+    plt.show()
 
 def __to_numpy__(path) -> type(np.array):
     dcm = pydicom.read_file(path)
@@ -85,14 +103,15 @@ files = [os.path.join(path, f) for f in os.listdir(path)]
 num_low = 4
 num_up = 6
 dcm = [pydicom.dcmread(f) for f in files[num_low:num_up]]
-print(dcm)
 
-# print(__to_numpy__(files[num_low:num_up]))
-for i in range(num_low, num_up+1):
+for i in range(0, num_up - num_low):
     print(f"Dicom number: {i}:\n{dcm[i]}")
-show_img_dir_one_by_one(files[num_low:num_up])
+
+show_img_dir_one_by_one_2(files[2])
 
 rows, cols = dcm.Rows, dcm.Columns
+
+print(rows, cols)
 
 dcm_arr = np.array(dcm.PixelData)
 
